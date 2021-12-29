@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-const PersonList = () =>{
-	return <div>
-		Person List
-	</div>;
-}
+const PersonList = () => {
+  return <div>
+	  Person List
+  </div>;
+};
 
-export {PersonList};
+export { PersonList };

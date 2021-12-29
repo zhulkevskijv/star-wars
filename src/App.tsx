@@ -1,5 +1,5 @@
 import React from 'react';
-import {PersonList} from './components';
+import { PersonList } from './components';
 
 const App = () => {
   return (
@@ -8,6 +8,6 @@ const App = () => {
       <PersonList/>
     </div>
   );
-}
+};
 
 export default App;
