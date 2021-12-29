@@ -4,7 +4,8 @@
         "es2021": true
     },
     "extends": [
-        "plugin:react/recommended"
+        "plugin:react/recommended",
+        "eslint:recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -21,8 +22,30 @@
     "rules": {
         "no-use-before-define": "off",
         "@typescript-eslint/no-use-before-define": ["error"],
-        "semi": [2, "always"]
+        "semi": [2, "always"],
+        "object-curly-spacing": ["error", "always"]
     },
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "extends": [
+                "eslint:recommended",
+                "plugin:@typescript-eslint/eslint-recommended",
+                "plugin:@typescript-eslint/recommended"
+            ],
+            "parser": "@typescript-eslint/parser",
+            "plugins": [
+                "@typescript-eslint"
+            ],
+            "parserOptions": {
+                "ecmaVersion": 2018,
+                "sourceType": "module"
+            },
+            "rules": {
+                "@typescript-eslint/no-inferrable-types": 0
+            }
+        }
+    ],
     "settings": {
         "react": {
             "pragma": "React",
