@@ -1,9 +1,11 @@
 import React from 'react';
+import {PersonList} from './components';
 
-function App() {
+const App = () => {
   return (
     <div>
       Star wars
+      <PersonList/>
     </div>
   );
 }
