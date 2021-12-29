@@ -1,10 +1,10 @@
 import React from 'react';
 import { PersonList } from './components';
-
+import { ReactComponent as StarWarsLogo } from 'assets/Logo.svg';
 const App = () => {
   return (
     <div>
-      Star wars
+      <StarWarsLogo/>
       <PersonList/>
     </div>
   );
