@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { PersonList } from 'components';
+import { PersonList } from 'components/PersonList';
 import { ReactComponent as StarWarsLogo } from 'assets/Logo.svg';
 import background from 'assets/starbackground.jpg';
 import styled, { createGlobalStyle } from "styled-components";

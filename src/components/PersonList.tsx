@@ -1,10 +1,11 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import swapi from 'config/axios';
-import { Person, SWAPIPersonResult } from 'types';
+import { Person, SWAPIResult, Film, Specimen } from 'types';
 import { AxiosResponse } from 'axios';
 import styled from 'styled-components';
 import loader from 'assets/space-loading.gif';
 import { DetailsModal } from "components/DetailsModal";
+import { FilterPane } from "components/FilterPane";
 
 const StyledList = styled.div`
   .list-item{
@@ -31,6 +32,8 @@ const LoaderContainer = styled.div`
 
 const PersonList = () => {
   const [people, setPeople] = useState<Array<Person>>([]);
+  const [films, setFilms] = useState<Array<Film>>([]);
+  const [species, setSpecies] = useState<Array<Specimen>>([]);
   const [show, setShow] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person|null>(null);
 
@@ -44,13 +47,13 @@ const PersonList = () => {
   };
 
   const [isLoading, setIsLoading] = useState(false);
-  const getPage = (url:string) :Promise<SWAPIPersonResult | void> => swapi.get(url)
-    .then((response:AxiosResponse<SWAPIPersonResult>) => Promise.resolve(response.data))
+  const getPage = <Type,>(url:string) :Promise<SWAPIResult<Type> | void> => swapi.get(url)
+    .then((response:AxiosResponse<SWAPIResult<Type>>) => Promise.resolve(response.data))
     .catch(error => console.log("Problem occurred during fetching!", error));
 
   /* eslint-disable no-unused-vars */
-  const getAllPages  = async (url : string, processResults : (people:Array<Person>) => void) => {
-    const data = await getPage(url);
+  const getAllPages  = async <Type,>(url : string, processResults : (results:Array<Type>) => void) => {
+    const data = await getPage<Type>(url);
     if (data){
       processResults(data.results);
       if (data.next !== null) {
@@ -61,8 +64,10 @@ const PersonList = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    setTimeout(()=>getAllPages('/people',(people) => setPeople((prevState => [...prevState,...people])))
-      .finally(() => setIsLoading(false)),1000);
+    getAllPages('/people',(people : Person[]) => setPeople(prevState => [...prevState,...people]))
+      .finally(() => setIsLoading(false));
+    getAllPages('/films',(films : Film[]) => setFilms(prevState => [...prevState,...films]));
+    getAllPages('/species',(species : Specimen[]) => setSpecies(prevState => [...prevState,...species]));
   },[]);
 
   const computeId = (person: Person): string => {
@@ -71,6 +76,7 @@ const PersonList = () => {
   };
 
   return <div>
+    <FilterPane films={films} species={species}/>
     <StyledList>
       {people.map((person, index) => (<div className="list-item" key={index} onClick={()=>handleShow(person)}>{index+1}. {person.name}</div>))}
       {isLoading ? <LoaderContainer>
