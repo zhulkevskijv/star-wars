@@ -10,7 +10,8 @@ declare module "*.jpg" {
     export default value;
 }
 
-declare module "*.jpeg" {
+declare module "*.gif" {
     const value: any;
     export default value;
 }
+
