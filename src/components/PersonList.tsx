@@ -1,11 +1,12 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import swapi from 'config/axios';
-import { Person, SWAPIResult, Film, Specimen } from 'types';
+import { Person, SWAPIResult, Film, Specimen, FilterTypes } from 'types';
 import { AxiosResponse } from 'axios';
 import styled from 'styled-components';
 import loader from 'assets/space-loading.gif';
 import { DetailsModal } from "components/DetailsModal";
 import { FilterPane } from "components/FilterPane";
+import { computeId } from "utils/utils";
 
 const StyledList = styled.div`
   .list-item{
@@ -32,10 +33,13 @@ const LoaderContainer = styled.div`
 
 const PersonList = () => {
   const [people, setPeople] = useState<Array<Person>>([]);
+  const [filteredPeople, setFilteredPeople] = useState<Array<Person>>([]);
   const [films, setFilms] = useState<Array<Film>>([]);
   const [species, setSpecies] = useState<Array<Specimen>>([]);
   const [show, setShow] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<Person|null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [filters, setFilters] = useState<FilterTypes>({ film: null, specimen: null });
 
   const handleClose = () => {
     setShow(false);
@@ -46,7 +50,7 @@ const PersonList = () => {
     setShow(true);
   };
 
-  const [isLoading, setIsLoading] = useState(false);
+
   const getPage = <Type,>(url:string) :Promise<SWAPIResult<Type> | void> => swapi.get(url)
     .then((response:AxiosResponse<SWAPIResult<Type>>) => Promise.resolve(response.data))
     .catch(error => console.log("Problem occurred during fetching!", error));
@@ -70,15 +74,22 @@ const PersonList = () => {
     getAllPages('/species',(species : Specimen[]) => setSpecies(prevState => [...prevState,...species]));
   },[]);
 
-  const computeId = (person: Person): string => {
-    const extractedId = person.url.match(/\d+/);
-    return extractedId ? extractedId.toString() : "";
-  };
+  useEffect(() => {
+    setFilteredPeople(people);
+    if (filters.film){
+      const filmId = computeId(filters.film);
+      setFilteredPeople((prevPeople) =>prevPeople.filter(pers => pers.films.some(film => film.includes(filmId))));
+    }
+    if(filters.specimen) {
+      const specimenId = computeId(filters.specimen);
+      setFilteredPeople((prevPeople) =>prevPeople.filter(pers => pers.species.some(specimen => specimen.includes(specimenId))));
+    }
+  },[filters, people]);
 
   return <div>
-    <FilterPane films={films} species={species}/>
+    <FilterPane films={films} species={species} setFilters={(newFilters) => setFilters({ ...filters, ...newFilters })}/>
     <StyledList>
-      {people.map((person, index) => (<div className="list-item" key={index} onClick={()=>handleShow(person)}>{index+1}. {person.name}</div>))}
+      {filteredPeople.map((person, index) => (<div className="list-item" key={index} onClick={()=>handleShow(person)}>{index+1}. {person.name}</div>))}
       {isLoading ? <LoaderContainer>
           <img className="loader" src={loader} alt="Still Loading..."/>
           <h3 className="loader-message">Loading...</h3>

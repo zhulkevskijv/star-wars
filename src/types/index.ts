@@ -23,3 +23,8 @@ export interface SWAPIResult<Type> {
     results: Array<Type>;
 }
 
+export interface FilterTypes{
+    film: string | null;
+    specimen: string | null;
+}
+
