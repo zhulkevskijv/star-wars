@@ -1,3 +1,5 @@
+import { Person } from "types";
+
 export const computeId = (data: string): string => {
   const extractedId = data.match(/\d+/);
   return extractedId ? extractedId.toString() : "";
@@ -7,3 +9,5 @@ export const getPropertiesById = <Type>(propertyName: string, stringData: Array<
   return allData.filter(value =>
     stringData.some(stringValue => (value as any).url == stringValue)).map(value=> (value as any)[propertyName]);
 };
+
+export const comparePeople = (a : Person, b : Person) : number => +computeId(a.url) - +computeId(b.url);

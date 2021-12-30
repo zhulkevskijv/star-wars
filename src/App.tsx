@@ -48,7 +48,6 @@ const App = () => {
             <StyledStarWarsLogo/>
           </div>
           <div>
-            <h1>Character list</h1>
             <PersonList/>
           </div>
         </AppWrapper>

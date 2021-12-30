@@ -6,17 +6,28 @@ import styled from 'styled-components';
 import loader from 'assets/space-loading.gif';
 import { DetailsModal } from "components/DetailsModal";
 import { FilterPane } from "components/FilterPane";
-import { computeId } from "utils/utils";
+import { comparePeople, computeId } from "utils/utils";
+
+
+const ListContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
 
 const StyledList = styled.div`
+  width: 50%;
+  padding: 0 20px;
   .list-item{
     padding: 10px;
     border-bottom: 1px grey solid;
-    &:first-child{
+    cursor: pointer;
+    &:nth-child(2){
       border-top: 1px grey solid;
     }
   }
 `;
+
+const FavoriteList = styled(StyledList)``;
 
 const LoaderContainer = styled.div`
   display: flex;
@@ -34,6 +45,7 @@ const LoaderContainer = styled.div`
 const PersonList = () => {
   const [people, setPeople] = useState<Array<Person>>([]);
   const [filteredPeople, setFilteredPeople] = useState<Array<Person>>([]);
+  const [favorites, setFavorites] = useState<Array<Person>>([]);
   const [films, setFilms] = useState<Array<Film>>([]);
   const [species, setSpecies] = useState<Array<Specimen>>([]);
   const [starships, setStarships] = useState<Array<Starship>>([]);
@@ -68,6 +80,16 @@ const PersonList = () => {
   };
 
   useEffect(() => {
+    const favs = window.localStorage.getItem('favorites');
+    if (favs)
+      setFavorites(JSON.parse(favs));
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem('favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  useEffect(() => {
     setIsLoading(true);
     getAllPages('/people',(people : Person[]) => setPeople(prevState => [...prevState,...people]))
       .finally(() => setIsLoading(false));
@@ -82,23 +104,37 @@ const PersonList = () => {
       const filmId = computeId(filters.film);
       setFilteredPeople((prevPeople) => prevPeople.filter(pers => pers.films.some(film => film.includes(filmId))));
     }
-    if(filters.specimen) {
+    if (filters.specimen) {
       const specimenId = computeId(filters.specimen);
       setFilteredPeople((prevPeople) => prevPeople.filter(pers => pers.species.some(specimen => specimen.includes(specimenId))));
     }
   },[filters, people]);
 
+  const addToFavorites = (person : Person) => {
+    if (!favorites.some(fav => person.url === fav.url)){
+      setFavorites(prevFavs => [...prevFavs, person].sort(comparePeople));
+    }
+  };
+
   return <div>
     <FilterPane films={films} species={species} setFilters={(newFilters) => setFilters({ ...filters, ...newFilters })}/>
-    <StyledList>
-      {filteredPeople.map((person, index) => (<div className="list-item" key={index} onClick={ ()=> handleShow(person) }>{index+1}. {person.name}</div>))}
-      {isLoading ? <LoaderContainer>
-          <img className="loader" src={loader} alt="Still Loading..."/>
-          <h3 className="loader-message">Loading...</h3>
-        </LoaderContainer> : <Fragment/>
-      }
-    </StyledList>
-    <DetailsModal show={show} selectedPerson={selectedPerson} handleClose={handleClose} films={films} species={species} starships={starships}/>
+    <ListContainer>
+      <StyledList>
+        <h1>Character list</h1>
+        {filteredPeople.map((person, index) => (<div className="list-item" key={index} onClick={ ()=> handleShow(person) }>{computeId(person.url)}. {person.name}</div>))}
+        {isLoading ? <LoaderContainer>
+            <img className="loader" src={loader} alt="Still Loading..."/>
+            <h3 className="loader-message">Loading...</h3>
+          </LoaderContainer> : <Fragment/>
+        }
+      </StyledList>
+      <FavoriteList>
+        <h1>Favorites</h1>
+        {favorites.map((person, index) => (<div className="list-item" key={index} onClick={ ()=> handleShow(person) }>{computeId(person.url)}. {person.name}</div>))}
+      </FavoriteList>
+    </ListContainer>
+
+    <DetailsModal show={show} selectedPerson={selectedPerson} handleClose={handleClose} films={films} species={species} starships={starships} addToFavorites={addToFavorites}/>
   </div>;
 };
 
