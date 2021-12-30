@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
-import { PersonList } from './components';
+import { PersonList } from 'components';
 import { ReactComponent as StarWarsLogo } from 'assets/Logo.svg';
 import background from 'assets/starbackground.jpg';
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 
 const AppWrapper = styled.div`
   min-height: 100%;
@@ -10,6 +10,7 @@ const AppWrapper = styled.div`
   flex-direction: column;
   background-image: url(${background});
   background-repeat: repeat;
+  padding: 30px;
   
   .logo-container{
     margin: 20px 0;
@@ -24,23 +25,42 @@ const GlobalStyles = createGlobalStyle`
     height: 100%;
     margin: 0;
   }
+  
+  *{
+    font-family: "Roboto",  sans-serif;
+  }
 `;
+
+const mainTheme = {
+  primaryColor: "#FFF",
+};
 
 const StyledStarWarsLogo = styled(StarWarsLogo)`
   fill: #FFC500;
   height: 200px;
 `;
 
+const ContentContainer = styled.div`
+  h1{
+    color: ${props => props.theme.primaryColor};
+  }
+`;
+
 const App = () => {
   return (
     <Fragment>
-        <GlobalStyles/>
+      <GlobalStyles/>
+      <ThemeProvider theme={mainTheme}>
         <AppWrapper>
-            <div className="logo-container">
-                <StyledStarWarsLogo/>
-            </div>
-            <PersonList/>
+          <div className="logo-container">
+            <StyledStarWarsLogo/>
+          </div>
+          <ContentContainer>
+            <h1>Character list</h1>
+          </ContentContainer>
+          <PersonList/>
         </AppWrapper>
+      </ThemeProvider>
     </Fragment>
   );
 };
