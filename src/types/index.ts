@@ -16,6 +16,9 @@ export interface Film {
     url: string;
 }
 
+export interface Starship extends Specimen{
+}
+
 export interface SWAPIResult<Type> {
     count: number;
     next: string | null;

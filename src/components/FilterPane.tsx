@@ -29,12 +29,12 @@ const FilterPane = ({ films, species, setFilters }:FilterPaneProps) =>{
       <h4>Filters</h4>
       <span>Films</span>
       <Form.Control as="select" onChange={(event) => setFilters({ film : event.target.value })}>
-        <option value={undefined}>Select film...</option>
+        <option value={undefined}>All films</option>
         {films.map((film,index) => (<option key={ index } value={film.url}>{film.title}</option>))}
       </Form.Control>
       <span>Species</span>
       <Form.Control as="select" onChange={(event) => setFilters({ specimen: event.target.value })}>
-        <option value={undefined}>Select specimen...</option>
+        <option value={undefined}>All species</option>
         {species.map((specimen, index) => (<option key={ index } value={specimen.url}>{specimen.name}</option>))}
       </Form.Control>
     </Card.Body>

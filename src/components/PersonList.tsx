@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import swapi from 'config/axios';
-import { Person, SWAPIResult, Film, Specimen, FilterTypes } from 'types';
+import { Person, SWAPIResult, Film, Specimen, FilterTypes, Starship } from 'types';
 import { AxiosResponse } from 'axios';
 import styled from 'styled-components';
 import loader from 'assets/space-loading.gif';
@@ -36,6 +36,7 @@ const PersonList = () => {
   const [filteredPeople, setFilteredPeople] = useState<Array<Person>>([]);
   const [films, setFilms] = useState<Array<Film>>([]);
   const [species, setSpecies] = useState<Array<Specimen>>([]);
+  const [starships, setStarships] = useState<Array<Starship>>([]);
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -72,31 +73,32 @@ const PersonList = () => {
       .finally(() => setIsLoading(false));
     getAllPages('/films',(films : Film[]) => setFilms(prevState => [...prevState,...films]));
     getAllPages('/species',(species : Specimen[]) => setSpecies(prevState => [...prevState,...species]));
+    getAllPages('/starships',(starships : Specimen[]) => setStarships(prevState => [...prevState,...starships]));
   },[]);
 
   useEffect(() => {
     setFilteredPeople(people);
     if (filters.film){
       const filmId = computeId(filters.film);
-      setFilteredPeople((prevPeople) =>prevPeople.filter(pers => pers.films.some(film => film.includes(filmId))));
+      setFilteredPeople((prevPeople) => prevPeople.filter(pers => pers.films.some(film => film.includes(filmId))));
     }
     if(filters.specimen) {
       const specimenId = computeId(filters.specimen);
-      setFilteredPeople((prevPeople) =>prevPeople.filter(pers => pers.species.some(specimen => specimen.includes(specimenId))));
+      setFilteredPeople((prevPeople) => prevPeople.filter(pers => pers.species.some(specimen => specimen.includes(specimenId))));
     }
   },[filters, people]);
 
   return <div>
     <FilterPane films={films} species={species} setFilters={(newFilters) => setFilters({ ...filters, ...newFilters })}/>
     <StyledList>
-      {filteredPeople.map((person, index) => (<div className="list-item" key={index} onClick={()=>handleShow(person)}>{index+1}. {person.name}</div>))}
+      {filteredPeople.map((person, index) => (<div className="list-item" key={index} onClick={ ()=> handleShow(person) }>{index+1}. {person.name}</div>))}
       {isLoading ? <LoaderContainer>
           <img className="loader" src={loader} alt="Still Loading..."/>
           <h3 className="loader-message">Loading...</h3>
         </LoaderContainer> : <Fragment/>
       }
     </StyledList>
-    <DetailsModal show={show} selectedPerson={selectedPerson} handleClose={handleClose}/>
+    <DetailsModal show={show} selectedPerson={selectedPerson} handleClose={handleClose} films={films} species={species} starships={starships}/>
   </div>;
 };
 
