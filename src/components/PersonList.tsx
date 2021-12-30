@@ -4,6 +4,7 @@ import { Person, SWAPIPersonResult } from 'types';
 import { AxiosResponse } from 'axios';
 import styled from 'styled-components';
 import loader from 'assets/space-loading.gif';
+import { DetailsModal } from "components/DetailsModal";
 
 const StyledList = styled.div`
   .list-item{
@@ -30,6 +31,18 @@ const LoaderContainer = styled.div`
 
 const PersonList = () => {
   const [people, setPeople] = useState<Array<Person>>([]);
+  const [show, setShow] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person|null>(null);
+
+  const handleClose = () => {
+    setShow(false);
+    setSelectedPerson(null);
+  };
+  const handleShow = (person: Person) => {
+    setSelectedPerson(person);
+    setShow(true);
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const getPage = (url:string) :Promise<SWAPIPersonResult | void> => swapi.get(url)
     .then((response:AxiosResponse<SWAPIPersonResult>) => Promise.resolve(response.data))
@@ -59,13 +72,14 @@ const PersonList = () => {
 
   return <div>
     <StyledList>
-      {people.map((person, index) => (<div className="list-item" key={index}>{index+1}. {person.name}</div>))}
-      {isLoading? <LoaderContainer>
+      {people.map((person, index) => (<div className="list-item" key={index} onClick={()=>handleShow(person)}>{index+1}. {person.name}</div>))}
+      {isLoading ? <LoaderContainer>
           <img className="loader" src={loader} alt="Still Loading..."/>
           <h3 className="loader-message">Loading...</h3>
         </LoaderContainer> : <Fragment/>
       }
     </StyledList>
+    <DetailsModal show={show} selectedPerson={selectedPerson} handleClose={handleClose}/>
   </div>;
 };
 

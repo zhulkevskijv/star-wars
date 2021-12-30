@@ -3,6 +3,7 @@ import { PersonList } from 'components';
 import { ReactComponent as StarWarsLogo } from 'assets/Logo.svg';
 import background from 'assets/starbackground.jpg';
 import styled, { createGlobalStyle } from "styled-components";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AppWrapper = styled.div`
   min-height: 100%;
