@@ -17,18 +17,35 @@ const StyledList = styled.div`
 `;
 
 const PersonList = () => {
-  const [persons, setPersons] = useState<Array<Person>>([]);
+  const [people, setPeople] = useState<Array<Person>>([]);
+
+  const getPage = (url:string) :Promise<SWAPIPersonResult | void> => swapi.get(url)
+    .then((response:AxiosResponse<SWAPIPersonResult>) => Promise.resolve(response.data))
+    .catch(error => console.log("Problem occurred during fetching!", error));
+
+  /* eslint-disable no-unused-vars */
+  const getAllPages  = async (url : string, processResults : (people:Array<Person>) => void) => {
+    const data = await getPage(url);
+    if (data){
+      processResults(data.results);
+      if (data.next !== null) {
+        getAllPages(data.next,processResults);
+      }
+    }
+  };
+
   useEffect(() => {
-    swapi.get('/people').then((data:AxiosResponse<SWAPIPersonResult>) => { setPersons(data.data.results); });
+    getAllPages('/people',(people) => setPeople((prevState => [...prevState,...people])));
   },[]);
 
   const computeId = (person: Person): string => {
     const extractedId = person.url.match(/\d+/);
     return extractedId ? extractedId.toString() : "";
   };
+
   return <div>
     <StyledList>
-      {persons.map((person, index) => (<div className="list-item" key={index}>{computeId(person)}. {person.name}</div>))}
+      {people.map((person, index) => (<div className="list-item" key={index}>{index+1}. {person.name}</div>))}
     </StyledList>
     </div>;
 };
