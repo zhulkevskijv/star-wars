@@ -11,3 +11,10 @@ export const getPropertiesById = <Type>(propertyName: string, stringData: Array<
 };
 
 export const comparePeople = (a : Person, b : Person) : number => +computeId(a.url) - +computeId(b.url);
+
+export const computeYear = (year : string) : number => {
+  const extractedYear = year.match(/\d+/);
+  if (extractedYear)
+    return +extractedYear.toString() * (year.slice(-3)[0] === "B" ? -1 : 1 );
+  return 0;
+};

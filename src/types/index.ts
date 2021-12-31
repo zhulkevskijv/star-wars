@@ -4,6 +4,7 @@ export interface Person {
     species: Array<string>;
     starships: Array<string>;
     url: string;
+    birth_year: string;
 }
 
 export interface Specimen {
@@ -29,5 +30,6 @@ export interface SWAPIResult<Type> {
 export interface FilterTypes{
     film: string | null;
     specimen: string | null;
+    birthYearFrom: number;
+    birthYearTo: number;
 }
-

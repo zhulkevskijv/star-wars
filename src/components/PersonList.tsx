@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import loader from 'assets/space-loading.gif';
 import { DetailsModal } from "components/DetailsModal";
 import { FilterPane } from "components/FilterPane";
-import { comparePeople, computeId } from "utils/utils";
+import { comparePeople, computeId, computeYear } from "utils/utils";
 
 
 const ListContainer = styled.div`
@@ -52,7 +52,7 @@ const PersonList = () => {
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [filters, setFilters] = useState<FilterTypes>({ film: null, specimen: null });
+  const [filters, setFilters] = useState<FilterTypes>({ film: null, specimen: null, birthYearFrom: -999, birthYearTo: 999 });
 
   const handleClose = () => {
     setShow(false);
@@ -108,6 +108,12 @@ const PersonList = () => {
       const specimenId = computeId(filters.specimen);
       setFilteredPeople((prevPeople) => prevPeople.filter(pers => pers.species.some(specimen => specimen.includes(specimenId))));
     }
+    if (filters.birthYearTo) {
+      setFilteredPeople(prevPeople => prevPeople.filter(person => computeYear(person.birth_year) <= filters.birthYearTo));
+    }
+    if (filters.birthYearFrom) {
+      setFilteredPeople(prevPeople => prevPeople.filter(person => computeYear(person.birth_year) >= filters.birthYearFrom));
+    }
   },[filters, people]);
 
   const addToFavorites = (person : Person) => {
@@ -117,7 +123,7 @@ const PersonList = () => {
   };
 
   return <div>
-    <FilterPane films={films} species={species} setFilters={(newFilters) => setFilters({ ...filters, ...newFilters })}/>
+    <FilterPane films={films} species={species} filters={filters} setFilters={(newFilters) => setFilters({ ...filters, ...newFilters })}/>
     <ListContainer>
       <StyledList>
         <h1>Character list</h1>
