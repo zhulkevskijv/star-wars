@@ -7,6 +7,7 @@ import loader from 'assets/space-loading.gif';
 import { DetailsModal } from "components/DetailsModal";
 import { FilterPane } from "components/FilterPane";
 import { comparePeople, computeId, computeYear } from "utils/utils";
+import { DragDropContext, Draggable, Droppable, OnDragEndResponder } from "react-beautiful-dnd";
 
 
 const ListContainer = styled.div`
@@ -27,7 +28,12 @@ const StyledList = styled.div`
   }
 `;
 
-const FavoriteList = styled(StyledList)``;
+const FavoriteList = styled(StyledList)`
+  height: auto;
+  & > div {
+    height: 100%;
+  }
+`;
 
 const LoaderContainer = styled.div`
   display: flex;
@@ -122,22 +128,94 @@ const PersonList = () => {
     }
   };
 
+  const removeFromFavorites = (index : number) => {
+    setFavorites((prevFavs => prevFavs.filter((_, idx) => idx !== index)));
+  };
+
+  const onDragEnd : OnDragEndResponder = (result) => {
+    const { source, destination } = result;
+
+    if (source.droppableId === "droppable2" && (!destination || (destination?.droppableId === "droppable"))) {
+      removeFromFavorites(source.index);
+    }
+
+    if ((source.droppableId === 'droppable') && (destination?.droppableId === 'droppable2')) {
+      addToFavorites(filteredPeople[source.index]);
+    }
+  };
+
   return <div>
     <FilterPane films={films} species={species} filters={filters} setFilters={(newFilters) => setFilters({ ...filters, ...newFilters })}/>
     <ListContainer>
-      <StyledList>
-        <h1>Character list</h1>
-        {filteredPeople.map((person, index) => (<div className="list-item" key={index} onClick={ ()=> handleShow(person) }>{computeId(person.url)}. {person.name}</div>))}
-        {isLoading ? <LoaderContainer>
-            <img className="loader" src={loader} alt="Still Loading..."/>
-            <h3 className="loader-message">Loading...</h3>
-          </LoaderContainer> : <Fragment/>
-        }
-      </StyledList>
-      <FavoriteList>
-        <h1>Favorites</h1>
-        {favorites.map((person, index) => (<div className="list-item" key={index} onClick={ ()=> handleShow(person) }>{computeId(person.url)}. {person.name}</div>))}
-      </FavoriteList>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided) => (
+            <StyledList>
+              <h1>Character list</h1>
+              <div
+                ref={provided.innerRef}>
+                {filteredPeople.map((person, index) => (
+                  <Draggable
+                    key={index}
+                    draggableId={computeId(person.url)}
+                    index={index}>
+                    {(provided, snapshot) => (
+                        <div className="list-item"
+                             key={index}
+                             onClick={ ()=> handleShow(person) }
+                             ref={provided.innerRef}
+                             {...provided.draggableProps}
+                             {...provided.dragHandleProps}
+                             style={
+                               provided.draggableProps.style
+                             }>{computeId(person.url)}. {person.name}
+                        </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+              {isLoading ? <LoaderContainer>
+                <img className="loader" src={loader} alt="Still Loading..."/>
+                <h3 className="loader-message">Loading...</h3>
+              </LoaderContainer> : <Fragment/>
+              }
+            </StyledList>
+          )}
+          </Droppable>
+        <Droppable droppableId="droppable2">
+          {(provided, snapshot) => (
+            <FavoriteList>
+              <h1>Favorites</h1>
+              <div
+                ref={provided.innerRef}>
+                {favorites.map((person, index) => (
+                  <Draggable
+                    key={index}
+                    draggableId={"-"+computeId(person.url)}
+                    index={index}>
+                    {(provided) => (
+                      <div className="list-item"
+                           key={index}
+                           onClick={ ()=> handleShow(person) }
+                           ref={provided.innerRef}
+                           {...provided.draggableProps}
+                           {...provided.dragHandleProps}
+                           style={
+                             provided.draggableProps.style
+                           }
+                      >
+                        {computeId(person.url)}. {person.name}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            </FavoriteList>
+          )}
+          </Droppable>
+      </DragDropContext>
     </ListContainer>
 
     <DetailsModal show={show} selectedPerson={selectedPerson} handleClose={handleClose} films={films} species={species} starships={starships} addToFavorites={addToFavorites}/>
