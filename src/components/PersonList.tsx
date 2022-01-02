@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import swapi from 'config/axios';
-import { Person, SWAPIResult, Film, Specimen, FilterTypes, Starship } from 'types';
-import { AxiosResponse } from 'axios';
+import { Person, Film, Specimen, FilterTypes, Starship } from 'types';
 import styled from 'styled-components';
 import { DetailsModal } from "components/DetailsModal";
 import { FilterPane } from "components/FilterPane";
 import { comparePeople, computeId, computeYear } from "utils/utils";
 import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd";
 import { ListDroppable } from "components/ListDroppable";
+import { getAllPages } from "utils/requests";
 
 
 const ListContainer = styled.div`
@@ -34,22 +33,6 @@ const PersonList = () => {
   const handleShow = (person: Person) => {
     setSelectedPerson(person);
     setShow(true);
-  };
-
-
-  const getPage = <Type,>(url:string) :Promise<SWAPIResult<Type> | void> => swapi.get(url)
-    .then((response:AxiosResponse<SWAPIResult<Type>>) => Promise.resolve(response.data))
-    .catch(error => console.log("Problem occurred during fetching!", error));
-
-  /* eslint-disable no-unused-vars */
-  const getAllPages  = async <Type,>(url : string, processResults : (results:Array<Type>) => void) => {
-    const data = await getPage<Type>(url);
-    if (data){
-      processResults(data.results);
-      if (data.next !== null) {
-        await getAllPages(data.next,processResults);
-      }
-    }
   };
 
   useEffect(() => {
