@@ -13,6 +13,10 @@ const AppWrapper = styled.div`
   background-repeat: repeat;
   padding: 30px 30px 50px;
   
+  @media(max-width: 600px){
+    padding: 10px 15px 30px;
+  }
+  
   .logo-container{
     margin: 20px 0;
     display: flex;

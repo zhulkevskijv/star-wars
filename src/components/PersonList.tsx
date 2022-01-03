@@ -98,8 +98,8 @@ const PersonList = () => {
     <FilterPane films={films} species={species} filters={filters} setFilters={(newFilters) => setFilters({ ...filters, ...newFilters })}/>
     <ListContainer>
       <DragDropContext onDragEnd={onDragEnd}>
-        <ListDroppable droppableId={"droppable"} data={filteredPeople} handleShow={handleShow} isLoaderIncluded={true} isLoading={isLoading}/>
-        <ListDroppable droppableId={"droppable2"} data={favorites} handleShow={handleShow}/>
+        <ListDroppable title={"All characters"} droppableId={"droppable"} data={filteredPeople} handleShow={handleShow} isLoaderIncluded={true} isLoading={isLoading}/>
+        <ListDroppable title={"Favorites"} droppableId={"droppable2"} data={favorites} handleShow={handleShow}/>
       </DragDropContext>
     </ListContainer>
 

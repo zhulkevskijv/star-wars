@@ -9,6 +9,10 @@ const StyledList = styled.div`
   width: 50%;
   padding: 0 20px;
   height: 100%;
+  
+  @media (max-width: 600px){
+    padding: 0 10px;
+  }
   & > div {
     height: auto;
   }
@@ -38,18 +42,19 @@ const LoaderContainer = styled.div`
 interface ListDroppableTypes{
   droppableId: string;
   data: Array<Person>;
+  title: string;
   /* eslint-disable no-unused-vars */
   handleShow: (person: Person) => void;
   isLoaderIncluded?: boolean;
   isLoading?: boolean;
 }
 
-const ListDroppable = ({ droppableId, data, handleShow, isLoading = false, isLoaderIncluded = false }:ListDroppableTypes) => {
+const ListDroppable = ({ droppableId, data, handleShow, title, isLoading = false, isLoaderIncluded = false }:ListDroppableTypes) => {
   return (
     <Droppable droppableId={droppableId}>
       {(provided) => (
         <StyledList>
-          <h1>Favorites</h1>
+          <h1>{title}</h1>
           <div
             ref={provided.innerRef}>
             {data.map((person, index) => (
