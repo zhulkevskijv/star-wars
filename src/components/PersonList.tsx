@@ -1,45 +1,17 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import swapi from 'config/axios';
-import { Person, SWAPIResult, Film, Specimen, FilterTypes, Starship } from 'types';
-import { AxiosResponse } from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Person, Film, Specimen, FilterTypes, Starship } from 'types';
 import styled from 'styled-components';
-import loader from 'assets/space-loading.gif';
 import { DetailsModal } from "components/DetailsModal";
 import { FilterPane } from "components/FilterPane";
 import { comparePeople, computeId, computeYear } from "utils/utils";
+import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd";
+import { ListDroppable } from "components/ListDroppable";
+import { getAllPages } from "utils/requests";
 
 
 const ListContainer = styled.div`
   display: flex;
   flex-direction: row;
-`;
-
-const StyledList = styled.div`
-  width: 50%;
-  padding: 0 20px;
-  .list-item{
-    padding: 10px;
-    border-bottom: 1px grey solid;
-    cursor: pointer;
-    &:nth-child(2){
-      border-top: 1px grey solid;
-    }
-  }
-`;
-
-const FavoriteList = styled(StyledList)``;
-
-const LoaderContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  .loader{
-    height: 100px;
-  }
-  .loader-message{
-    margin-top: -10px;
-  }
 `;
 
 const PersonList = () => {
@@ -61,22 +33,6 @@ const PersonList = () => {
   const handleShow = (person: Person) => {
     setSelectedPerson(person);
     setShow(true);
-  };
-
-
-  const getPage = <Type,>(url:string) :Promise<SWAPIResult<Type> | void> => swapi.get(url)
-    .then((response:AxiosResponse<SWAPIResult<Type>>) => Promise.resolve(response.data))
-    .catch(error => console.log("Problem occurred during fetching!", error));
-
-  /* eslint-disable no-unused-vars */
-  const getAllPages  = async <Type,>(url : string, processResults : (results:Array<Type>) => void) => {
-    const data = await getPage<Type>(url);
-    if (data){
-      processResults(data.results);
-      if (data.next !== null) {
-        await getAllPages(data.next,processResults);
-      }
-    }
   };
 
   useEffect(() => {
@@ -122,25 +78,32 @@ const PersonList = () => {
     }
   };
 
+  const removeFromFavorites = (index : number) => {
+    setFavorites((prevFavs => prevFavs.filter((_, idx) => idx !== index)));
+  };
+
+  const onDragEnd : OnDragEndResponder = (result) => {
+    const { source, destination } = result;
+
+    if (source.droppableId === "droppable2" && (!destination || (destination?.droppableId === "droppable"))) {
+      removeFromFavorites(source.index);
+    }
+
+    if ((source.droppableId === 'droppable') && (destination?.droppableId === 'droppable2')) {
+      addToFavorites(filteredPeople[source.index]);
+    }
+  };
+
   return <div>
     <FilterPane films={films} species={species} filters={filters} setFilters={(newFilters) => setFilters({ ...filters, ...newFilters })}/>
     <ListContainer>
-      <StyledList>
-        <h1>Character list</h1>
-        {filteredPeople.map((person, index) => (<div className="list-item" key={index} onClick={ ()=> handleShow(person) }>{computeId(person.url)}. {person.name}</div>))}
-        {isLoading ? <LoaderContainer>
-            <img className="loader" src={loader} alt="Still Loading..."/>
-            <h3 className="loader-message">Loading...</h3>
-          </LoaderContainer> : <Fragment/>
-        }
-      </StyledList>
-      <FavoriteList>
-        <h1>Favorites</h1>
-        {favorites.map((person, index) => (<div className="list-item" key={index} onClick={ ()=> handleShow(person) }>{computeId(person.url)}. {person.name}</div>))}
-      </FavoriteList>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <ListDroppable droppableId={"droppable"} data={filteredPeople} handleShow={handleShow} isLoaderIncluded={true} isLoading={isLoading}/>
+        <ListDroppable droppableId={"droppable2"} data={favorites} handleShow={handleShow}/>
+      </DragDropContext>
     </ListContainer>
 
-    <DetailsModal show={show} selectedPerson={selectedPerson} handleClose={handleClose} films={films} species={species} starships={starships} addToFavorites={addToFavorites}/>
+    <DetailsModal show={show} selectedPerson={selectedPerson} handleClose={handleClose} films={films} species={species} starships={starships}/>
   </div>;
 };
 

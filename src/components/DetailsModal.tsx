@@ -11,8 +11,6 @@ interface DetailsModalProps {
   species: Array<Specimen>;
   films: Array<Film>;
   starships: Array<Starship>;
-  /* eslint-disable no-unused-vars */
-  addToFavorites: (person : Person) => void;
 }
 
 const InfoText = styled.p`
@@ -20,7 +18,7 @@ const InfoText = styled.p`
   margin: 10px 0;
 `;
 
-const DetailsModal = ({ show, handleClose, selectedPerson, films, species, starships, addToFavorites }: DetailsModalProps) =>{
+const DetailsModal = ({ show, handleClose, selectedPerson, films, species, starships }: DetailsModalProps) =>{
   return <Modal
     show={show}
     onHide={handleClose}
@@ -43,7 +41,6 @@ const DetailsModal = ({ show, handleClose, selectedPerson, films, species, stars
       }
     </Modal.Body>
     <Modal.Footer>
-      {selectedPerson? <Button variant="success" onClick={()=> addToFavorites(selectedPerson)}>Add to Favorites</Button>: <Fragment/>}
       <Button variant="secondary" onClick={handleClose}>
         Close
       </Button>
