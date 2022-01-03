@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { PersonList } from 'components/PersonList';
 import { ReactComponent as StarWarsLogo } from 'assets/Logo.svg';
 import background from 'assets/starbackground.jpg';
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from 'styled-components';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AppWrapper = styled.div`
@@ -12,12 +12,12 @@ const AppWrapper = styled.div`
   background-image: url(${background});
   background-repeat: repeat;
   padding: 30px 30px 50px;
-  
-  @media(max-width: 600px){
+
+  @media (max-width: 600px) {
     padding: 10px 15px 30px;
   }
-  
-  .logo-container{
+
+  .logo-container {
     margin: 20px 0;
     display: flex;
     align-items: center;
@@ -36,22 +36,21 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
-
 const StyledStarWarsLogo = styled(StarWarsLogo)`
-  fill: #FFC500;
+  fill: #ffc500;
   height: 200px;
 `;
 
 const App = () => {
   return (
     <Fragment>
-      <GlobalStyles/>
-        <AppWrapper>
-          <div className="logo-container">
-            <StyledStarWarsLogo/>
-          </div>
-          <PersonList/>
-        </AppWrapper>
+      <GlobalStyles />
+      <AppWrapper>
+        <div className="logo-container">
+          <StyledStarWarsLogo />
+        </div>
+        <PersonList />
+      </AppWrapper>
     </Fragment>
   );
 };
