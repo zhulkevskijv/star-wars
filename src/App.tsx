@@ -33,7 +33,6 @@ const GlobalStyles = createGlobalStyle`
   
   *{
     font-family: "Roboto",  sans-serif;
-    color: white;
   }
 `;
 
@@ -51,9 +50,7 @@ const App = () => {
           <div className="logo-container">
             <StyledStarWarsLogo/>
           </div>
-          <div>
-            <PersonList/>
-          </div>
+          <PersonList/>
         </AppWrapper>
     </Fragment>
   );

@@ -8,18 +8,23 @@ import loader from 'assets/space-loading.gif';
 const StyledList = styled.div`
   width: 50%;
   padding: 0 20px;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  & > h1 {
+    color: white;
+  }
   
   @media (max-width: 600px){
     padding: 0 10px;
   }
   & > div {
-    height: auto;
+    height: 100%;
   }
   .list-item{
     padding: 10px;
     border-bottom: 1px grey solid;
     cursor: pointer;
+    color: white;
     &:first-child{
       border-top: 1px grey solid;
     }
@@ -47,24 +52,26 @@ interface ListDroppableTypes{
   handleShow: (person: Person) => void;
   isLoaderIncluded?: boolean;
   isLoading?: boolean;
+  style?: {
+    height: string;
+  }
 }
 
-const ListDroppable = ({ droppableId, data, handleShow, title, isLoading = false, isLoaderIncluded = false }:ListDroppableTypes) => {
+const ListDroppable = ({ droppableId, data, handleShow, title, style, isLoading = false, isLoaderIncluded = false } : ListDroppableTypes) => {
   return (
     <Droppable droppableId={droppableId}>
       {(provided) => (
-        <StyledList>
+        <StyledList style={style}>
           <h1>{title}</h1>
           <div
             ref={provided.innerRef}>
             {data.map((person, index) => (
               <Draggable
                 key={index}
-                draggableId={"-"+computeId(person.url)}
+                draggableId={computeId(person.url)+droppableId}
                 index={index}>
                 {(provided) => (
                   <div className="list-item"
-                       key={index}
                        onClick={ ()=> handleShow(person) }
                        ref={provided.innerRef}
                        {...provided.draggableProps}

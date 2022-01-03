@@ -85,7 +85,7 @@ const PersonList = () => {
   const onDragEnd : OnDragEndResponder = (result) => {
     const { source, destination } = result;
 
-    if (source.droppableId === "droppable2" && (!destination || (destination?.droppableId === "droppable"))) {
+    if (source.droppableId === 'droppable2' && (!destination || (destination?.droppableId === 'droppable'))) {
       removeFromFavorites(source.index);
     }
 
@@ -99,7 +99,7 @@ const PersonList = () => {
     <ListContainer>
       <DragDropContext onDragEnd={onDragEnd}>
         <ListDroppable title={"All characters"} droppableId={"droppable"} data={filteredPeople} handleShow={handleShow} isLoaderIncluded={true} isLoading={isLoading}/>
-        <ListDroppable title={"Favorites"} droppableId={"droppable2"} data={favorites} handleShow={handleShow}/>
+        <ListDroppable title={"Favorites"} droppableId={"droppable2"} data={favorites} handleShow={handleShow} style={{ height : "auto" }}/>
       </DragDropContext>
     </ListContainer>
 
